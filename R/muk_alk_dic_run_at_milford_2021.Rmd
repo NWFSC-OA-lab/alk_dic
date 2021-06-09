@@ -1,0 +1,83 @@
+---
+title: "Analysis of Muk Alk/DIC samples run at Milford lab May, 2021 "
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    theme: cerulean
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+  word_document:
+    toc: yes
+    toc_depth: '4'
+editor_options:
+  chunk_output_type: console
+---
+#Libraries
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+library(seacarb)
+```
+# About the data
+The samples were
+
+#Read raw file
+```{r}
+#read raw data file
+d_raw <- read_csv(here("data_raw", "milford_run_muk_samples_2021_05_19",
+                   "NOAA Northwest Fisheries-TA and DIC  - Sheet1.csv"))
+#clean up data
+
+d <- d_raw %>%
+  clean_names() %>%
+  select(!starts_with("x")) %>%
+  rename("sample_id" = "sample_code_on_the_bottle",
+         "alk" = "ta_umol_kg",
+         "dic" = "dic_umol_kg") %>%
+  separate(sample_id, sep = " ", c("sample_date", "sample_loc"),
+           remove = FALSE) %>%
+  mutate(sample_date = if_else(str_detect(sample_id, "CRM"), "", sample_date)) %>%
+  mutate(sample_date = as.Date(sample_date, format = "%m-%d-%y")) %>%
+  mutate(sample_loc = if_else(str_detect(sample_id, "CRM"), "", sample_loc)) %>%
+  {.}
+```
+# Alk vs Salinity
+```{r}
+d %>%
+  filter(!str_detect(sample_id, "CRM")) %>%
+  ggplot(aes(salinity, alk)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+# Carbonate parameters
+```{r}
+#Note: insitu temperature is just a place holder - need real values
+d <- d %>%
+  mutate(insitu_t = 12) %>%
+  mutate(pH = carb(flag = 15, alk/1000000, dic/1000000, S = salinity, T = insitu_t)$pH) %>%
+  mutate(pCO2 = carb(flag = 15, alk/1000000, dic/1000000, S = salinity, T = insitu_t)$pCO2) %>%
+  mutate(omega_arg = carb(flag = 15, alk/1000000, dic/1000000, S = salinity, T = insitu_t)$OmegaAragonite) %>%
+  mutate(omega_cal = carb(flag = 15, alk/1000000, dic/1000000, S = salinity, T = insitu_t)$OmegaCalcite)
+```
+# Plot by date
+```{r}
+d %>%
+  filter(!str_detect(sample_id, "CRM")) %>%
+  ggplot(aes(sample_date, pH)) +
+    geom_point() 
+```
+
+
+
+
+
+
+
+
+
+
+
