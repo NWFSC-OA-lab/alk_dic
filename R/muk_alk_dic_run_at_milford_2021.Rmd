@@ -23,7 +23,7 @@ library(janitor)
 library(seacarb)
 ```
 # About the data
-The samples were
+The seawater samples collected by the NWFSC for OA experiments at Mukilteo were analyzed for TA and DIC at the NEFSC Milford lab in May/June 2021.
 
 #Read raw file
 ```{r}
