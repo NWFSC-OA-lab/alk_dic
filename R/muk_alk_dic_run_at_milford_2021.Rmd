@@ -70,8 +70,23 @@ d %>%
   ggplot(aes(sample_date, pH)) +
     geom_point() 
 ```
-
-
+# Template for sample in situ info
+Just run this once to create the template.
+```{r}
+# d_samples <- d %>%
+#   filter(!str_detect(sample_id, "CRM")) %>%
+#   arrange(sample_date) %>%
+#   select(sample_id, sample_date, sample_loc) %>%
+#   mutate(experiment = "", durafet_pH = "", spec_pH = "", chamber_co2 = "",
+#          temperature = "", salinity = "", notes = "")
+# if(file.exists(here("data", "milford_run_muk_samples_2021_05_19", 
+#                     "milford_run_samples_insitu_data.csv"))){
+#       warning(paste("The file already exists. Cannot overwrite."))
+# }else{
+#    write_csv(d_samples, here("data", "milford_run_muk_samples_2021_05_19", 
+#                              "milford_run_samples_insitu_data.csv"))
+# }
+```
 
 
 
