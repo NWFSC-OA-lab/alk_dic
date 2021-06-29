@@ -1,53 +1,53 @@
-sample_id,sample_date,sample_loc,experiment,durafet_pH,spec_pH,chamber_co2,temperature,salinity,notes
-3-26-16 M1,3/26/16,M1,null,null,null,null,null,null,null
-3-26-16 M3,3/26/16,M3,null,null,null,null,null,null,null
-3-26-16 M4,3/26/16,M4,null,null,null,null,null,null,null
-3-26-16 M10,3/26/16,M10,null,null,null,null,null,null,null
-3-26-16 M2,3/26/16,M2,null,null,null,null,null,null,null
-3-26-16 M6,3/26/16,M6,null,null,null,null,null,null,null
-3-26-16 M8,3/26/16,M8,null,null,null,null,null,null,null
-3-26-16 M9,3/26/16,M9,null,null,null,null,null,null,null
-3-26-16 M5,3/26/16,M5,null,null,null,null,null,null,null
-3-26-16 M7,3/26/16,M7,null,null,null,null,null,null,null
-3-26-16 M13,3/26/16,M13,null,null,null,null,null,null,null
-7-5-16 M4,7/5/16,M4,null,null,null,null,null,null,null
-7-5-16 M5,7/5/16,M5,null,null,null,null,null,null,null
-7-5-16 M9,7/5/16,M9,null,null,null,null,null,null,null
-9-8-16 M4,9/8/16,M4,null,null,null,null,null,null,null
-11-29-16 M11,11/29/16,M11,null,null,null,null,null,null,null
-11-29-16 M12,11/29/16,M12,null,null,null,null,null,null,null
-8-24-18 D,8/24/18,D,null,null,null,null,null,null,null
-8-24-18 C,8/24/18,C,null,null,null,null,null,null,null
-8-24-18 A,8/24/18,A,null,null,null,null,null,null,null
-8-24-18 B,8/24/18,B,null,null,null,null,null,null,null
-7-3-19 CH09,7/3/19,CH09,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019
-7-3-19 CH10,7/3/19,CH10,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019
-7-3-19 CH08,7/3/19,CH08,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019
-7-3-19 CH07,7/3/19,CH07,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019
-7-3-19 CH06,7/3/19,CH06,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019
-7-3-19 CH05,7/3/19,CH05,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019
-7-3-19 CH01,7/3/19,CH01,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019
-7-3-19 CH04,7/3/19,CH04,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019
-8-7-19 CO1,8/7/19,CO1,dgn_juv_expo_2018_to_2018,null,null,null,null,null,Dungeness juvenile crab long term exposure experiment from 2018 to 2018
-8-7-19 CH1,8/7/19,CH1,null,null,null,null,null,null,what was the chamber sampled a second time in August?
-8-7-19 CH6,8/7/19,CH6,null,null,null,null,null,null,what was the chamber sampled a second time in August?
-8-7-19 CH2,8/7/19,CH2,null,null,null,null,null,null,what was the chamber sampled a second time in August?
-8-7-19 CO5,8/7/19,CO5,dgn_juv_expo_2018_to_2018,null,null,null,null,null,Dungeness juvenile crab long term exposure experiment from 2018 to 2018
-8-7-19 CO6,8/7/19,CO6,dgn_juv_expo_2018_to_2018,null,null,null,null,null,Dungeness juvenile crab long term exposure experiment from 2018 to 2018
-8-7-19 CO2,8/7/19,CO2,dgn_juv_expo_2018_to_2018,null,null,null,null,null,Dungeness juvenile crab long term exposure experiment from 2018 to 2018
-8-7-19 CO3,8/7/19,CO3,dgn_juv_expo_2018_to_2018,null,null,null,null,null,Dungeness juvenile crab long term exposure experiment from 2018 to 2018
-8-7-19 CO4,8/7/19,CO4,dgn_juv_expo_2018_to_2018,null,null,null,null,null,Dungeness juvenile crab long term exposure experiment from 2018 to 2018
-10-15-19 M1,10/15/19,M1,null,null,null,null,null,null,null
-10-15-19 M5,10/15/19,M5,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-15-19 M6,10/15/19,M6,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-15-19 M10,10/15/19,M10,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-15-19 M3,10/15/19,M3,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-15-19 M4,10/15/19,M4,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-15-19 M8,10/15/19,M8,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-15-19 M2,10/15/19,M2,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-31-19 M6,10/31/19,M6,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-31-19 M2,10/31/19,M2,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-31-19 M4,10/31/19,M4,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-31-19 M8,10/31/19,M8,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-31-19 M1,10/31/19,M1,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
-10-31-19 M10,10/31/19,M10,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs
+sample_id,sample_date,sample_loc,experiment,durafet_pH,spec_pH,chamber_co2,temperature,salinity,notes,deep_notes
+3-26-16 M1,3/26/16,M1,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M3,3/26/16,M3,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M4,3/26/16,M4,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M10,3/26/16,M10,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M2,3/26/16,M2,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M6,3/26/16,M6,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M8,3/26/16,M8,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M9,3/26/16,M9,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M5,3/26/16,M5,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M7,3/26/16,M7,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+3-26-16 M13,3/26/16,M13,dgn_zoe_MOATS_2016,null,null,null,null,null,Dungeness Zoea MOATs exposure 2016,"11 bottles sent in case #2, shipped case #4"
+7-5-16 M4,7/5/16,M4,dgn_meg_MOATS_2016,null,null,null,null,null,Dungeness Megalopae MOATs exposure 2016,3 bottles sent for the 7/5/716 timeframe
+7-5-16 M5,7/5/16,M5,dgn_meg_MOATS_2016,null,null,null,null,null,Dungeness Megalopae MOATs exposure 2016,3 bottles sent for the 7/5/716 timeframe
+7-5-16 M9,7/5/16,M9,dgn_meg_MOATS_2016,null,null,null,null,null,Dungeness Megalopae MOATs exposure 2016,3 bottles sent for the 7/5/716 timeframe
+9-8-16 M4,9/8/16,M4,dgn_meg_MOATS_2016,null,null,null,null,null,Dungeness Megalopae MOATs exposure 2016,extra bottle
+11-29-16 M11,11/29/16,M11,ptero_MOATS_2016,null,null,null,null,null,Pteropods MOATs 2016,9 bottles sent for 11/29/16 timeframe 
+11-29-16 M12,11/29/16,M12,ptero_MOATS_2016,null,null,null,null,null,Pteropods MOATs 2016,2 of 9 bottles for 11/29/16
+8-24-18 D,8/24/18,D,Salmon_Shed_2018to2019,null,null,null,null,null,Salmon Shed Monitoring,4 bottles labeled for 8/24/18 to cover 2018-2019 across all experiments
+8-24-18 C,8/24/18,C,Salmon_Shed_2018to2019,null,null,null,null,null,Salmon Shed Monitoring,4 bottles labeled for 8/24/18 to cover 2018-2019 across all experiments
+8-24-18 A,8/24/18,A,Salmon_Shed_2018to2019,null,null,null,null,null,Salmon Shed Monitoring,4 bottles labeled for 8/24/18 to cover 2018-2019 across all experiments
+8-24-18 B,8/24/18,B,Salmon_Shed_2018to2019,null,null,null,null,null,Salmon Shed Monitoring,4 bottles labeled for 8/24/18 to cover 2018-2019 across all experiments
+7-3-19 CH09,7/3/19,CH09,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019,8 bottles labeled for 2019 dungeness zoea 
+7-3-19 CH10,7/3/19,CH10,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019,8 bottles labeled for 2019 dungeness zoea 
+7-3-19 CH08,7/3/19,CH08,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019,8 bottles labeled for 2019 dungeness zoea 
+7-3-19 CH07,7/3/19,CH07,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019,8 bottles labeled for 2019 dungeness zoea 
+7-3-19 CH06,7/3/19,CH06,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019,8 bottles labeled for 2019 dungeness zoea 
+7-3-19 CH05,7/3/19,CH05,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019,8 bottles labeled for 2019 dungeness zoea 
+7-3-19 CH01,7/3/19,CH01,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019,8 bottles labeled for 2019 dungeness zoea 
+7-3-19 CH04,7/3/19,CH04,dgn_zoe_CHMBR_2019,null,null,null,null,null,Dungeness  Zoea Chamber Experiment 2019,8 bottles labeled for 2019 dungeness zoea 
+8-7-19 CO1,8/7/19,CO1,salmon_chinook_chum_2019,null,null,null,null,null,Chinook Salmon 2019 Chum House,assumptions about which salmon project
+8-7-19 CH1,8/7/19,CH1,salmon_coho_sShed_2019,null,null,null,null,null,Coho Salmon 2019 Salmon Shed,"three bottles sent for analysis, assumed CH1, CH2, CH6"
+8-7-19 CH6,8/7/19,CH6,salmon_coho_sShed_2019,null,null,null,null,null,Coho Salmon 2019 Salmon Shed,"three bottles sent for analysis, assumed CH1, CH2, CH6"
+8-7-19 CH2,8/7/19,CH2,salmon_coho_sShed_2019,null,null,null,null,null,Coho Salmon 2019 Salmon Shed,"three bottles sent for analysis, assumed CH1, CH2, CH6"
+8-7-19 CO5,8/7/19,CO5,salmon_chinook_chum_2019,null,null,null,null,null,Chinook Salmon 2019 Chum House,assumptions about which salmon project
+8-7-19 CO6,8/7/19,CO6,salmon_chinook_chum_2019,null,null,null,null,null,Chinook Salmon 2019 Chum House,assumptions about which salmon project
+8-7-19 CO2,8/7/19,CO2,salmon_chinook_chum_2019,null,null,null,null,null,Chinook Salmon 2019 Chum House,assumptions about which salmon project
+8-7-19 CO3,8/7/19,CO3,salmon_chinook_chum_2019,null,null,null,null,null,Chinook Salmon 2019 Chum House,assumptions about which salmon project
+8-7-19 CO4,8/7/19,CO4,salmon_chinook_chum_2019,null,null,null,null,null,Chinook Salmon 2019 Chum House,assumptions about which salmon project
+10-15-19 M1,10/15/19,M1,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,eight bottles sent for the 15OCT19 for 2019 summer krill
+10-15-19 M5,10/15/19,M5,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,eight bottles sent for the 15OCT19 for 2019 summer krill
+10-15-19 M6,10/15/19,M6,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,eight bottles sent for the 15OCT19 for 2019 summer krill
+10-15-19 M10,10/15/19,M10,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,eight bottles sent for the 15OCT19 for 2019 summer krill
+10-15-19 M3,10/15/19,M3,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,eight bottles sent for the 15OCT19 for 2019 summer krill
+10-15-19 M4,10/15/19,M4,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,eight bottles sent for the 15OCT19 for 2019 summer krill
+10-15-19 M8,10/15/19,M8,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,eight bottles sent for the 15OCT19 for 2019 summer krill
+10-15-19 M2,10/15/19,M2,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,eight bottles sent for the 15OCT19 for 2019 summer krill
+10-31-19 M6,10/31/19,M6,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,"six bottles sent, six bottles noted for 2019 summer krill"
+10-31-19 M2,10/31/19,M2,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,"six bottles sent, six bottles noted for 2019 summer krill"
+10-31-19 M4,10/31/19,M4,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,"six bottles sent, six bottles noted for 2019 summer krill"
+10-31-19 M8,10/31/19,M8,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,"six bottles sent, six bottles noted for 2019 summer krill"
+10-31-19 M1,10/31/19,M1,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,"six bottles sent, six bottles noted for 2019 summer krill"
+10-31-19 M10,10/31/19,M10,krl_cross_expo_2019,null,null,null,null,null,krill cross exposure experiment in MOATs,"six bottles sent, six bottles noted for 2019 summer krill"
