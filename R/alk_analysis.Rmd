@@ -1,0 +1,157 @@
+---
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../output_word") })
+title: "Alklalinity Analysis"
+output:
+  officedown::rdocx_document:
+    reference_docx: word_style_ref_01.docx
+editor_options:
+  chunk_output_type: console
+#bibliography: references.bib
+---
+
+```{r knitter_options, include = FALSE}
+# chunk header include = FALSE supresses code in the Word output
+# chunk options supress warnings, messages and output in the Word output
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, echo=FALSE)
+```
+
+```{r libraries}
+library(tidyverse)
+library(here)
+library(janitor)
+library(todor)
+library(readxl)
+library(fs)
+```
+
+```{r color-palette}
+# A color-blind friendly palette :
+
+cbPalette <- c("#E69F00","#56B4E9","#009E73",
+               "#F0E442","#0072B2","#D55E00","#CC79A7")
+```
+
+```{r read-treatment-file}
+d_treat <- read_csv(here("data", "example_alk", "treatment_data", "r1_treatment.csv")) %>%
+  filter(!is.na(Unit)) %>%
+  rename(unit = Unit,
+         unit_number = UnitNumber,
+         treat_start_date = StartDate,
+         treat_end_date = EndDate,
+         treatment_name = TreatmentName,
+         temperature = Tempereture,
+         ph = pH,
+         additional_treament = AdditionalTreatmentA)
+```
+
+```{r read-alk-files}
+d_alk <- dir_ls(here("data", "example_alk", "alk_data"), regexp = "xlsx") %>%
+  map_dfr(read_excel) %>% 
+  left_join(d_treat, by = c("unit", "unit_number")) %>%
+  unite("unit_id", c(unit, unit_number), remove = FALSE)
+
+```
+
+```{r plot-variable-options}
+
+plot_opts <- list( lab = unique(d_alk$alk_lab),
+                      run_by = unique(d_alk$run_by),
+                      experiment = unique(d_alk$experiment),
+                      unit = unique(d_alk$unit),
+                      unit_id = unique(d_alk$unit_id),
+                      water_source = unique(d_alk$water_source),
+                      water_type = unique(d_alk$water_type),
+                      sample_set = unique(d_alk$sample_set),
+                      date = unique(d_alk$date),
+                      treatment = unique(d_alk$treatment_name))
+
+```
+
+```{r plot-filter-fun}
+d_alk_filtered <- d_alk %>%
+               filter(alk_lab %in% plot_opts$lab[],
+                      run_by %in% plot_opts$run_by[],
+                      experiment %in% plot_opts$experiment[],
+                      unit %in% plot_opts$unit[],
+                      unit_id %in% plot_opts$unit_id[],
+                      water_source %in% plot_opts$water_source[],
+                      water_type %in% plot_opts$water_type[],
+                      sample_set %in% plot_opts$sample_set[],
+                      date %in% plot_opts$date[],
+                      treatment_name %in% plot_opts$treatment[])
+
+
+```
+
+```{r}
+plot_var_opts <- c("alk_lab", 
+                 "run_by", 
+                 "experiment", 
+                 "unit", 
+                 "unit_id", 
+                 "water_source",
+                 "water_type", 
+                 "sample_set", 
+                 "date", 
+                 "treatment_name")
+
+```
+
+
+```{r box-plot}
+
+
+x_axis_index <- c(4)
+color_by_index <- c(6,7)
+facet_by_index <- c(8)
+
+d_alk %>%
+ filter(alk_lab %in% plot_opts$lab[],
+        run_by %in% plot_opts$run_by[],
+        experiment %in% plot_opts$experiment[],
+        unit %in% plot_opts$unit[1:2],
+        unit_id %in% plot_opts$unit_id[],
+        water_source %in% plot_opts$water_source[],
+        water_type %in% plot_opts$water_type[],
+        sample_set %in% plot_opts$sample_set[],
+        date %in% plot_opts$date[],
+        treatment_name %in% plot_opts$treatment[]) %>%
+  unite(x_axis, plot_var_opts[x_axis_index]) %>%
+  unite(color_by, plot_var_opts[color_by_index]) %>%
+  unite(facet_by, plot_var_opts[facet_by_index]) %>%
+    ggplot(aes(x_axis, alkalinity)) +
+      geom_jitter(aes(color = color_by), alpha = 0.5) +
+      geom_boxplot(aes(color = color_by)) +
+      facet_wrap(vars(facet_by)) + 
+      xlab(paste(plot_var_opts[x_axis_index], collapse = "_")) +
+      scale_colour_discrete(paste(plot_var_opts[color_by_index], collapse = "_")) +
+      theme_bw(base_size = 16)
+
+```
+
+
+```{r}
+
+add_combo_var <- function(d, vars){
+  d <- d_alk_filtered
+  vars <- plot_var_opts[c(6,7)]
+  comb_var_name <- as.character(paste(vars, collapse = "_"))
+  new_var <- pull(d[,vars[1]])
+  for(i in 2:length(vars)){
+    new_var <- paste(new_var, pull(d[,vars[i]]), sep = "_")
+  }
+  d[[comb_var_name]] <- new_var
+}
+
+```
+
+```{r}
+plot_data <- function(d, x_axis, color_by, facet_by){
+  
+}
+```
+
+
+
+

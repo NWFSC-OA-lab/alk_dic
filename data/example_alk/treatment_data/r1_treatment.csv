@@ -1,0 +1,8 @@
+Unit,UnitNumber,StartDate,EndDate,TreatmentName,Tempereture,pH,AdditionalTreatmentA
+chamber,3,2/20/22,5/1/22,high_co2,10,8,NA
+chamber,4,2/20/22,5/1/22,low_co2,10,7.2,NA
+chamber,5,2/20/22,5/1/22,high_co2,10,8,NA
+chamber,6,2/20/22,5/1/22,low_co2,10,7.2,NA
+chamber,7,2/20/22,5/1/22,low_co2,10,7.2,NA
+chamber,8,2/20/22,5/1/22,high_co2,10,8,NA
+,,,,,,,
