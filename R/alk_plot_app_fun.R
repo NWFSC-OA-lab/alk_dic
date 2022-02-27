@@ -1,0 +1,176 @@
+# functions for alk_plot_app ----
+
+## libraries ----
+library(tidyverse)
+
+## filter alk function ----
+filter_alk <- function(d_alk, filter_alk_lab, filter_run_by, filter_experiment,
+                       filter_unit, filter_unit_id, filter_water_source, filter_sample_set,
+                       filter_date, filter_treatment_name){
+  
+  #convert missing values from checkboxes (i.e. "", to NA)
+  filter_alk_lab[filter_alk_lab == ""] <- NA
+  filter_run_by[filter_run_by == ""] <- NA
+  filter_experiment[filter_experiment == ""] <- NA
+  filter_unit[filter_unit == ""] <- NA
+  filter_unit_id[filter_unit_id == ""] <- NA
+  filter_water_source[filter_water_source == ""] <- NA
+  filter_sample_set[filter_sample_set == ""] <- NA
+  filter_date[filter_date == ""] <- NA
+  filter_treatment_name[filter_treatment_name == ""] <- NA
+
+  
+  
+  if(!is.null(filter_alk_lab)){
+    d_alk <- d_alk %>% 
+           filter(alk_lab %in% filter_alk_lab)
+  }
+  if(!is.null(filter_run_by)){
+    d_alk <- d_alk %>% 
+      filter(run_by %in% filter_run_by)
+  }
+  if(!is.null(filter_experiment)){
+    d_alk <- d_alk %>% 
+      filter(experiment %in% filter_experiment)
+  }
+  if(!is.null(filter_unit)){
+    d_alk <- d_alk %>% 
+      filter(unit %in% filter_unit)
+  }
+  if(!is.null(filter_unit_id)){
+    d_alk <- d_alk %>% 
+      filter(unit_id %in% filter_unit_id)
+  }
+  if(!is.null(filter_water_source)){
+    d_alk <- d_alk %>%
+      filter(water_source %in% filter_water_source)
+  }
+  if(!is.null(filter_sample_set)){
+    d_alk <- d_alk %>% 
+      filter(sample_set %in% filter_sample_set)
+  }
+  if(!is.null(filter_date)){
+    d_alk <- d_alk %>%
+      filter(as.character(date) %in% filter_date)
+  }
+  if(!is.null(filter_treatment_name)){
+    d_alk <- d_alk %>%
+      filter(treatment_name %in% filter_treatment_name)
+  }
+  
+  return(d_alk)
+}
+
+
+## plot function ----
+alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars, 
+                         color_by_vars, facet_by_vars){
+  # variables for testing
+  # plot_type = "box"
+  # x_axis_vars <- c("experiment")
+  # color_by_vars <- c("water_source", "sample_set")
+  # facet_by_vars <- NULL
+  # d_alk_filtered <- plot_filter(d_alk)
+  
+  
+  # add x-axis variable
+  d_alk_plot  <- d_alk_filtered %>%
+    unite(x_axis, x_axis_vars, remove = FALSE)
+  
+  # return null default
+  p <- NULL
+  
+  ### box plots
+  if(plot_type == "box" & is.null(color_by_vars) & is.null(facet_by_vars)){
+    p <- d_alk_plot %>%
+      ggplot(aes(x_axis, alkalinity)) +
+      geom_jitter(alpha = 0.5) +
+      geom_boxplot()
+  }
+  
+  if(plot_type == "box" & !is.null(color_by_vars) & is.null(facet_by_vars)){
+    p <-  d_alk_plot %>%
+      unite(color_by, color_by_vars, remove = FALSE) %>%
+      ggplot(aes(x_axis, alkalinity)) +
+      geom_jitter(aes(color = color_by), alpha = 0.5) +
+      geom_boxplot(aes(color = color_by)) +
+      scale_colour_discrete(paste(color_by_vars, collapse = "_"))
+  }
+  
+  if(plot_type == "box" & is.null(color_by_vars) & !is.null(facet_by_vars)){
+    p <-  d_alk_plot %>%
+      unite(facet_by, facet_by_vars, remove = FALSE) %>%
+      ggplot(aes(x_axis, alkalinity)) +
+      geom_jitter(alpha = 0.5) +
+      geom_boxplot() +
+      facet_wrap(vars(facet_by))
+  }  
+  
+  if(plot_type == "box" & !is.null(color_by_vars) & !is.null(facet_by_vars)){
+    p <-  d_alk_plot %>%
+      unite(color_by, color_by_vars, remove = FALSE) %>%
+      unite(facet_by, facet_by_vars, remove = FALSE) %>%
+      ggplot(aes(x_axis, alkalinity)) +
+      geom_jitter(aes(color = color_by), alpha = 0.5) +
+      geom_boxplot(aes(color = color_by)) +
+      facet_wrap(vars(facet_by)) + 
+      scale_colour_discrete(paste(color_by_vars, collapse = "_"))
+  }
+  
+  
+  ### scatter plots
+  if(plot_type == "scatter" & is.null(color_by_vars) & is.null(facet_by_vars)){
+    p <- d_alk_plot %>%
+      ggplot(aes(x_axis, alkalinity)) +
+      geom_point() +
+      geom_boxplot()
+  }
+  
+  if(plot_type == "scatter" & !is.null(color_by_vars) & is.null(facet_by_vars)){
+    p <-  d_alk_plot %>%
+      unite(color_by, color_by_vars, remove = FALSE) %>%
+      ggplot(aes(x_axis, alkalinity)) +
+      geom_point(aes(color = color_by)) +
+      scale_colour_discrete(paste(color_by_vars, collapse = "_"))
+  }
+  
+  if(plot_type == "scatter" & is.null(color_by_vars) & !is.null(facet_by_vars)){
+    p <-  d_alk_plot %>%
+      unite(facet_by, facet_by_vars, remove = FALSE) %>%
+      ggplot(aes(x_axis, alkalinity)) +
+      geom_point() +
+      facet_wrap(vars(facet_by))
+  }  
+  
+  if(plot_type == "scatter" & !is.null(color_by_vars) & !is.null(facet_by_vars)){
+    p <-  d_alk_plot %>%
+      unite(color_by, color_by_vars, remove = FALSE) %>%
+      unite(facet_by, facet_by_vars, remove = FALSE) %>%
+      ggplot(aes(x_axis, alkalinity)) +
+      geom_point(aes(color = color_by)) +
+      facet_wrap(vars(facet_by)) + 
+      scale_colour_discrete(paste(color_by_vars, collapse = "_"))
+  }
+  
+  #set attributes common to all plots
+  p <- p + 
+    xlab(paste(x_axis_vars, collapse = "_")) +
+    theme_bw(base_size = 16)
+  
+  return(p)
+}
+
+test_fun  <- function(x){
+  return("whatever")
+}
+
+
+
+
+
+
+
+
+
+
+

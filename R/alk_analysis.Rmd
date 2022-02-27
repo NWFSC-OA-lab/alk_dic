@@ -69,7 +69,9 @@ plot_opts <- list( lab = unique(d_alk$alk_lab),
 ```
 
 ```{r plot-filter-fun}
-d_alk_filtered <- d_alk %>%
+
+plot_filter <- function(d_alk){
+  d_alk_filtered <- d_alk %>%
                filter(alk_lab %in% plot_opts$lab[],
                       run_by %in% plot_opts$run_by[],
                       experiment %in% plot_opts$experiment[],
@@ -80,6 +82,8 @@ d_alk_filtered <- d_alk %>%
                       sample_set %in% plot_opts$sample_set[],
                       date %in% plot_opts$date[],
                       treatment_name %in% plot_opts$treatment[])
+  return(d_alk_filtered)
+}
 
 
 ```
@@ -99,59 +103,124 @@ plot_var_opts <- c("alk_lab",
 ```
 
 
-```{r box-plot}
+```{r plot}
 
-
-x_axis_index <- c(4)
-color_by_index <- c(6,7)
-facet_by_index <- c(8)
-
-d_alk %>%
- filter(alk_lab %in% plot_opts$lab[],
-        run_by %in% plot_opts$run_by[],
-        experiment %in% plot_opts$experiment[],
-        unit %in% plot_opts$unit[1:2],
-        unit_id %in% plot_opts$unit_id[],
-        water_source %in% plot_opts$water_source[],
-        water_type %in% plot_opts$water_type[],
-        sample_set %in% plot_opts$sample_set[],
-        date %in% plot_opts$date[],
-        treatment_name %in% plot_opts$treatment[]) %>%
-  unite(x_axis, plot_var_opts[x_axis_index]) %>%
-  unite(color_by, plot_var_opts[color_by_index]) %>%
-  unite(facet_by, plot_var_opts[facet_by_index]) %>%
-    ggplot(aes(x_axis, alkalinity)) +
-      geom_jitter(aes(color = color_by), alpha = 0.5) +
-      geom_boxplot(aes(color = color_by)) +
-      facet_wrap(vars(facet_by)) + 
-      xlab(paste(plot_var_opts[x_axis_index], collapse = "_")) +
-      scale_colour_discrete(paste(plot_var_opts[color_by_index], collapse = "_")) +
-      theme_bw(base_size = 16)
-
-```
-
-
-```{r}
-
-add_combo_var <- function(d, vars){
-  d <- d_alk_filtered
-  vars <- plot_var_opts[c(6,7)]
-  comb_var_name <- as.character(paste(vars, collapse = "_"))
-  new_var <- pull(d[,vars[1]])
-  for(i in 2:length(vars)){
-    new_var <- paste(new_var, pull(d[,vars[i]]), sep = "_")
-  }
-  d[[comb_var_name]] <- new_var
-}
-
-```
-
-```{r}
-plot_data <- function(d, x_axis, color_by, facet_by){
+alk_box_plot <- function(d_alk_filtered, plot_type = "box", plot_var_opts, x_axis_index, 
+                         color_by_index, facet_by_index){
+  # variables for testing
+  # plot_type = "box"
+  # x_axis_index <- c(4)
+  # color_by_index <- c(6,7)
+  # facet_by_index <- c(8)
+  # d_alk_filtered <- plot_filter(d_alk)
   
+  
+  # add x-axis variable
+  d_alk_plot  <- d_alk_filtered %>%
+    unite(x_axis, plot_var_opts[x_axis_index], remove = FALSE)
+  
+  # return null default
+  p <- NULL
+  
+  ### box plots
+  if(plot_type == "box" & is.null(color_by_index) & is.null(facet_by_index)){
+             p <- d_alk_plot %>%
+                    ggplot(aes(x_axis, alkalinity)) +
+                      geom_jitter(alpha = 0.5) +
+                      geom_boxplot()
+  }
+  
+  if(plot_type == "box" & !is.null(color_by_index) & is.null(facet_by_index)){
+              p <-  d_alk_plot %>%
+                        unite(color_by, plot_var_opts[color_by_index], remove = FALSE) %>%
+                        ggplot(aes(x_axis, alkalinity)) +
+                          geom_jitter(aes(color = color_by), alpha = 0.5) +
+                          geom_boxplot(aes(color = color_by)) +
+                          scale_colour_discrete(paste(plot_var_opts[color_by_index], collapse = "_"))
+  }
+    
+  if(plot_type == "box" & is.null(color_by_index) & !is.null(facet_by_index)){
+              p <-  d_alk_plot %>%
+                        unite(facet_by, plot_var_opts[facet_by_index], remove = FALSE) %>%
+                        ggplot(aes(x_axis, alkalinity)) +
+                          geom_jitter(alpha = 0.5) +
+                          geom_boxplot() +
+                          facet_wrap(vars(facet_by))
+  }  
+              
+  if(plot_type == "box" & !is.null(color_by_index) & !is.null(facet_by_index)){
+                p <-  d_alk_plot %>%
+                        unite(color_by, plot_var_opts[color_by_index], remove = FALSE) %>%
+                        unite(facet_by, plot_var_opts[facet_by_index], remove = FALSE) %>%
+                        ggplot(aes(x_axis, alkalinity)) +
+                          geom_jitter(aes(color = color_by), alpha = 0.5) +
+                          geom_boxplot(aes(color = color_by)) +
+                          facet_wrap(vars(facet_by)) + 
+                          scale_colour_discrete(paste(plot_var_opts[color_by_index], collapse = "_"))
+  }
+  
+  
+  ### scatter plots
+  if(plot_type == "scatter" & is.null(color_by_index) & is.null(facet_by_index)){
+             p <- d_alk_plot %>%
+                    ggplot(aes(x_axis, alkalinity)) +
+                      geom_point() +
+                      geom_boxplot()
+  }
+  
+  if(plot_type == "scatter" & !is.null(color_by_index) & is.null(facet_by_index)){
+              p <-  d_alk_plot %>%
+                        unite(color_by, plot_var_opts[color_by_index], remove = FALSE) %>%
+                        ggplot(aes(x_axis, alkalinity)) +
+                          geom_point(aes(color = color_by)) +
+                          scale_colour_discrete(paste(plot_var_opts[color_by_index], collapse = "_"))
+  }
+    
+  if(plot_type == "scatter" & is.null(color_by_index) & !is.null(facet_by_index)){
+              p <-  d_alk_plot %>%
+                        unite(facet_by, plot_var_opts[facet_by_index], remove = FALSE) %>%
+                        ggplot(aes(x_axis, alkalinity)) +
+                          geom_point() +
+                          facet_wrap(vars(facet_by))
+  }  
+              
+  if(plot_type == "scatter" & !is.null(color_by_index) & !is.null(facet_by_index)){
+                p <-  d_alk_plot %>%
+                        unite(color_by, plot_var_opts[color_by_index], remove = FALSE) %>%
+                        unite(facet_by, plot_var_opts[facet_by_index], remove = FALSE) %>%
+                        ggplot(aes(x_axis, alkalinity)) +
+                          geom_point(aes(color = color_by)) +
+                          facet_wrap(vars(facet_by)) + 
+                          scale_colour_discrete(paste(plot_var_opts[color_by_index], collapse = "_"))
+  }
+
+  #set attributes common to all plots
+  p <- p + 
+    xlab(paste(plot_var_opts[x_axis_index], collapse = "_")) +
+    theme_bw(base_size = 16)
+    
+  return(p)
 }
+
+
 ```
 
 
+```{r}
+alk_box_plot(plot_filter(d_alk), "box", plot_var_opts, c(4), c(6,7), c(8))
+alk_box_plot(plot_filter(d_alk), "box", plot_var_opts, c(4), NULL, c(8))
+alk_box_plot(plot_filter(d_alk), "box", plot_var_opts, c(4), c(6,7), NULL)
+alk_box_plot(plot_filter(d_alk), "box", plot_var_opts, c(4), NULL, NULL)
+
+alk_box_plot(plot_filter(d_alk), "scatter", plot_var_opts, c(9), c(6,7), c(8))
+alk_box_plot(plot_filter(d_alk), "scatter", plot_var_opts, c(9), NULL, c(8))
+alk_box_plot(plot_filter(d_alk), "scatter", plot_var_opts, c(9), c(6,7), NULL)
+alk_box_plot(plot_filter(d_alk), "scatter", plot_var_opts, c(9), NULL, NULL)
+
+
+alk_box_plot(plot_filter(d_alk), "scatter", plot_var_opts, c(9), c(6,7), c(8))
+
+
+```
 
 
