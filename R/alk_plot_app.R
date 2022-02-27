@@ -25,6 +25,7 @@ ui <- fluidPage(
                   uiOutput("filter_unit"),
                   uiOutput("filter_unit_id"),
                   uiOutput("filter_water_source"),
+                  uiOutput("filter_water_type"),
                   uiOutput("filter_sample_set"),
                   uiOutput("filter_date"),
                   uiOutput("filter_treatment_name"),
@@ -37,12 +38,12 @@ ui <- fluidPage(
                                      selected = "experiment", inline = TRUE),
                   checkboxGroupInput("colour_by", "Colour by", 
                                      choices = c("alk_lab", "run_by", "experiment", "unit",
-                                                 "unit_id", "water_source","sample_set",
+                                                 "unit_id", "water_source", "water_type", "sample_set",
                                                  "date", "treatment_name", "salinity"),
                                      selected = NULL, inline = TRUE),
                   checkboxGroupInput("facet_by", "Facet_by", 
                                      choices = c("alk_lab", "run_by", "experiment", "unit",
-                                                 "unit_id", "water_source","sample_set",
+                                                 "unit_id", "water_source", "water_type", "sample_set",
                                                  "date", "treatment_name", "salinity"),
                                      selected = NULL, inline = TRUE),
                   #dateRangeInput("dates", h4("Date range"), start = "2018-03-13"),
@@ -60,8 +61,10 @@ ui <- fluidPage(
                    choices = c("box", "scatter")),
       sliderInput("point_size", "Plot point size",
                   min = 0.5, max = 8, value = 1, step = 0.5),
+      sliderInput("font_size", "Font size",
+                  min = 12, max = 32, value = 16, step = 1),
       sliderInput("ySlider", "Y-axis Range)", 
-                  min = 6, max = 9, value = c(7, 8.4), step = 0.1),
+                  min = 2000, max = 6000, value = c(2500, 3500), step = 100),
       checkboxInput("yRangeCheckbox", "Limit Graph Y-axixs Range", value = FALSE),
     )
   )
@@ -139,6 +142,12 @@ server <- function(input, output) {
     checkboxGroupInput("water_source_filter", "Include water source", filter_opts, 
                        selected = filter_opts, inline = TRUE)
   })
+  #water_source include dynamic checkboxes
+  output$filter_water_type <- renderUI({
+    filter_opts <- as.character(unique(values$d_alk$water_type))
+    checkboxGroupInput("water_type_filter", "Include water type", filter_opts, 
+                       selected = filter_opts, inline = TRUE)
+  })
   #sample_source include dynamic checkboxes
   output$filter_sample_set <- renderUI({
     filter_opts <- as.character(unique(values$d_alk$sample_set))
@@ -164,10 +173,11 @@ server <- function(input, output) {
 
     d_filtered <- filter_alk(values$d_alk, input$alk_lab_filter, input$run_by_filter,
                              input$experiment_filter, input$unit_filter, input$unit_id_filter,
-                             input$water_source_filter, input$sample_set_filter, input$date_filter,
-                             input$treatment_name_filter)
+                             input$water_source_filter, input$water_type_filter,input$sample_set_filter, 
+                             input$date_filter, input$treatment_name_filter)
     
-    alk_plot(d_filtered, input$plot_type, input$x_axis_vars, input$colour_by, input$facet_by) 
+    alk_plot(d_filtered, input$plot_type, input$x_axis_vars, input$colour_by, input$facet_by,
+             input$point_size, input$yRangeCheckbox, input$ySlider, input$font_size) 
   })
   
   ## download csv ----
