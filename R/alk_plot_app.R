@@ -63,31 +63,39 @@ ui <- fluidPage(
       radioButtons("plot_type", h4("Plot Type"), 
                    choices = c("box", "scatter"), inline = TRUE),
       checkboxInput("show_alk_sal_est", "Show alk from sal extimate mean", value = FALSE),
+      checkboxInput("show_ref_value", "Show standard reference value", value = FALSE),
       sliderInput("point_size", "Plot point size",
                   min = 0.5, max = 8, value = 1, step = 0.5),
       sliderInput("font_size", "Font size",
                   min = 12, max = 32, value = 16, step = 1),
+      checkboxInput("rotate_x_axis", "Rotate x-axis", value = FALSE),
       sliderInput("ySlider", "Y-axis Range)", 
                   min = 2000, max = 6000, value = c(2500, 3500), step = 100),
       checkboxInput("yRangeCheckbox", "Limit Graph Y-axixs Range", value = FALSE),
+      checkboxInput("free_y_facet", "Facet free y-axis", value = FALSE)
     )
   )
 )
 
+read_fun <- function(file){
+  return(read_excel(file) %>% mutate(unit_number = as.character(unit_number)))
+}
 
 # Define server logic ----
 server <- function(input, output) {
   values <- reactiveValues(d_alk = NULL, d_treat = NULL)
-  
+
+      
   ## read alk data ----
   # also adds alk estimated from salinity
  observeEvent(input$files, {
     values$d_alk <- input$files$datapath %>%
-      map_dfr(read_excel) %>% 
+      map_dfr(read_fun) %>% 
       unite("unit_id", c(unit, unit_number), remove = FALSE) %>%
       mutate(alk_sal_slope = as.numeric(input$alk_sal_slope),
              alk_sal_intercept = as.numeric(input$alk_sal_intercept)) %>%
-      mutate(alk_sal_est = salinity * alk_sal_slope + alk_sal_intercept) 
+      mutate(alk_sal_est = salinity * alk_sal_slope + alk_sal_intercept) %>%
+      mutate(treatment_name = NA)
   })
   
   ## read treatment data ---
@@ -110,6 +118,7 @@ server <- function(input, output) {
              treat_additional = AdditionalTreatmentA)
     #Add treatments to alk file
     values$d_alk <- values$d_alk %>%
+      select(-treatment_name) %>%
       left_join(values$d_treat, by = c("unit", "unit_number"))
   })
   
@@ -191,7 +200,8 @@ server <- function(input, output) {
                              input$date_filter, input$treatment_name_filter, input$quality_flag_filter)
     
     alk_plot(d_filtered, input$plot_type, input$x_axis_vars, input$colour_by, input$facet_by,
-             input$point_size, input$yRangeCheckbox, input$ySlider, input$font_size, input$show_alk_sal_est) 
+             input$point_size, input$yRangeCheckbox, input$ySlider, input$font_size, input$show_alk_sal_est,
+             input$rotate_x_axis, input$show_ref_value, input$free_y_facet) 
   })
   
   ## download csv ----

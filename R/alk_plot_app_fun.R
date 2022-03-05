@@ -74,7 +74,8 @@ filter_alk <- function(d_alk, filter_alk_lab, filter_run_by, filter_experiment,
 ## plot function ----
 alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars, 
                          color_by_vars, facet_by_vars,
-                     point_size, set_y_range, y_range, font_size, show_alk_sal_est){
+                     point_size, set_y_range, y_range, font_size, show_alk_sal_est,
+                     rotate_x_axis, show_ref_value, free_y_facet){
   # A color-blind friendly palette :
   cbPalette <- c("#E69F00","#56B4E9","#009E73",
                  "#F0E442","#0072B2","#D55E00","#CC79A7")
@@ -85,6 +86,8 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
   # add x-axis variable
   d_alk_plot  <- d_alk_filtered %>%
     unite(x_axis, x_axis_vars, remove = FALSE)
+  
+  y_facet <- if_else(free_y_facet, "free_y", "fixed")
   
   # return null default
   p <- NULL
@@ -125,7 +128,7 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
       geom_jitter(width = 0.1, height = 0, alpha = 0.5, 
                   size = point_size, colour = base_color) +
       stat_summary(fun.y=mean, geom="point", shape=8, size=14, color=mean_color, fill="black") +
-      facet_wrap(vars(facet_by))
+      facet_wrap(vars(facet_by), scales = y_facet)
   }  
   
   if(plot_type == "box" & !is.null(color_by_vars) & !is.null(facet_by_vars)){
@@ -138,7 +141,7 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
              position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0)) +
         stat_summary(fun.y=mean, geom="point", shape=8, size=14, 
                      position = position_dodge2(width = 0.9, preserve = "single")) +
-        facet_wrap(vars(facet_by)) + 
+        facet_wrap(vars(facet_by), scales = y_facet) + 
         scale_colour_manual(name = paste(color_by_vars, collapse = "_"),
                             values = cbPalette)
   }
@@ -165,7 +168,7 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
       unite(facet_by, facet_by_vars, remove = FALSE) %>%
       ggplot(aes(x_axis, alkalinity)) +
       geom_point(size = point_size, colour = base_color) +
-      facet_wrap(vars(facet_by))
+      facet_wrap(vars(facet_by), scales = y_facet)
   }  
   
   if(plot_type == "scatter" & !is.null(color_by_vars) & !is.null(facet_by_vars)){
@@ -174,7 +177,7 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
       unite(facet_by, facet_by_vars, remove = FALSE) %>%
       ggplot(aes(x_axis, alkalinity)) +
       geom_point(aes(color = color_by), size = point_size) +
-      facet_wrap(vars(facet_by)) + 
+      facet_wrap(vars(facet_by), scales = y_facet) + 
       scale_colour_manual(labels = paste(color_by_vars, collapse = "_"),
                           values = cbPalette)
   }
@@ -187,7 +190,15 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
     xlab(paste(x_axis_vars, collapse = "_")) +
     ylim(y_range) +
     theme_bw(base_size = font_size)
-  
+  if(rotate_x_axis){
+    p <- p +
+      theme(axis.text.x = element_text(angle = 90))
+  }
+  if(show_ref_value){
+    p <- p + 
+      geom_point(aes(y = ref_value), size = 5, colour = "black", shape = 18)
+  }
+
   return(p)
 }
 
