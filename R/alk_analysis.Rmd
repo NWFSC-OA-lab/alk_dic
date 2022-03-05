@@ -34,7 +34,6 @@ cbPalette <- c("#E69F00","#56B4E9","#009E73",
 
 ```{r read-treatment-file}
 d_treat <- read_csv(here("data", "example_alk", "treatment_data", "r1_treatment.csv")) %>%
-  filter(!is.na(Unit)) %>%
   rename(unit = Unit,
          unit_number = UnitNumber,
          treat_start_date = StartDate,
@@ -63,7 +62,7 @@ plot_opts <- list( lab = unique(d_alk$alk_lab),
                       water_source = unique(d_alk$water_source),
                       water_type = unique(d_alk$water_type),
                       sample_set = unique(d_alk$sample_set),
-                      date = unique(d_alk$date),
+                      date_collected = unique(d_alk$date_collected),
                       treatment = unique(d_alk$treatment_name))
 
 ```
@@ -80,7 +79,7 @@ plot_filter <- function(d_alk){
                       water_source %in% plot_opts$water_source[],
                       water_type %in% plot_opts$water_type[],
                       sample_set %in% plot_opts$sample_set[],
-                      date %in% plot_opts$date[],
+                      date_collected %in% plot_opts$date_collected[],
                       treatment_name %in% plot_opts$treatment[])
   return(d_alk_filtered)
 }
@@ -97,7 +96,7 @@ plot_var_opts <- c("alk_lab",
                  "water_source",
                  "water_type", 
                  "sample_set", 
-                 "date", 
+                 "date_collected", 
                  "treatment_name")
 
 ```
