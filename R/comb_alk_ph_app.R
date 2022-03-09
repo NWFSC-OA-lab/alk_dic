@@ -34,6 +34,7 @@ ui <- fluidPage(
             
                   actionButton("view_match", "View match"), 
                   actionButton("save_match", "Save match"),
+                  actionButton("delete_rows", "Delete match table rows"),
                   downloadButton("downloadData", "Download saved match table")
     ),
     ## table ui ----
@@ -279,6 +280,13 @@ server <- function(input, output) {
                                                              server = FALSE),
                                               rownames = FALSE)
     
+  })
+  ## delete match rows ----
+  observeEvent(input$delete_rows,{
+    if (!is.null(input$match_table_view_rows_selected)) {
+      rows_selected <- input$match_table_view_rows_selected
+      values$match_table <- values$match_table[-as.numeric(input$match_table_view_rows_selected),]
+    }
   })
   
   ## download csv ----

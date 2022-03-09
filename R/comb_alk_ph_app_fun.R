@@ -79,7 +79,18 @@ make_match <- function(d_alk, d_ph){
                           ph = mean(d_ph$pHinsitu),
                           temperature = mean(d_ph$insituTemp)) 
    d_carb <- carb(flag = 8, d_match$ph, d_match$alk/1000000, T = d_match$temperature, S = d_match$alk_salinity)
-   d_match <- cbind(d_match, d_carb)
+   
+   d_alk_1 <- d_alk %>%
+     slice_head() %>%
+     rename_with(~paste("alk", .x, sep = "_"))
+   
+   d_ph_1 <- d_ph %>%
+     slice_head() %>%
+     rename_with(~paste("ph", .x, sep = "_"))
+   
+   d_match <- cbind(d_match, d_carb, d_alk_1, d_ph_1)
+     
+     
   return(d_match)
 }
 
