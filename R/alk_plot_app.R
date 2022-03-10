@@ -62,7 +62,7 @@ ui <- fluidPage(
       plotOutput("plot", width = "100%", height = "740px"),
       radioButtons("plot_type", h4("Plot Type"), 
                    choices = c("box", "scatter"), inline = TRUE),
-      checkboxInput("show_alk_sal_est", "Show alk from sal extimate mean", value = FALSE),
+      checkboxInput("show_alk_sal_est", "Show alk from sal estimate mean", value = FALSE),
       checkboxInput("show_ref_value", "Show standard reference value", value = FALSE),
       sliderInput("point_size", "Plot point size",
                   min = 0.5, max = 8, value = 1, step = 0.5),

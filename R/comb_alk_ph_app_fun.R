@@ -73,10 +73,12 @@ filter_table <- function(d, filter_alk_lab, filter_run_by, filter_experiment,
 
 make_match <- function(d_alk, d_ph){
   d_match <- data.frame(  alk_n = nrow(d_alk), 
-                          alk = mean(d_alk$alkalinity), 
+                          alk = mean(d_alk$alkalinity),
+                          alk_sd = sd(d_alk$alkalinity),
                           alk_salinity = mean(d_alk$salinity),
                           ph_n = nrow(d_ph),
                           ph = mean(d_ph$pHinsitu),
+                          ph_sd = sd(d_ph$pHinsitu),
                           temperature = mean(d_ph$insituTemp)) 
    d_carb <- carb(flag = 8, d_match$ph, d_match$alk/1000000, T = d_match$temperature, S = d_match$alk_salinity)
    

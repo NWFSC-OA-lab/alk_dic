@@ -76,6 +76,7 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
                          color_by_vars, facet_by_vars,
                      point_size, set_y_range, y_range, font_size, show_alk_sal_est,
                      rotate_x_axis, show_ref_value, free_y_facet){
+  
   # A color-blind friendly palette :
   cbPalette <- c("#E69F00","#56B4E9","#009E73",
                  "#F0E442","#0072B2","#D55E00","#CC79A7")
@@ -99,10 +100,10 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
       ggplot(aes(x_axis, alkalinity)) +
       geom_boxplot(colour = base_color) +
       geom_jitter(width = 0.1, height = 0, alpha = 0.5, size = point_size, colour = base_color) +
-      stat_summary(fun.y=mean, geom="point", shape=8, size=14, color=mean_color, fill="black")
+      stat_summary(fun="mean", geom="point", shape=8, size=14, color=mean_color, fill="black")
     if(show_alk_sal_est){
-      p +  stat_summary(aes(x_axis, alk_sal_est),fun.y=mean, geom="point", shape=18, size=14, 
-                        color=mean_color, fill="black")
+      p <- p +  stat_summary(aes(x_axis, alk_sal_est),fun=base::mean, geom="point", na.rm = TRUE,
+                             shape=18, size=14, color="purple", fill="purple") 
     }
   }
   
@@ -113,11 +114,14 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
         geom_boxplot() +
         geom_point(alpha = 0.5, size = point_size,
                    position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0)) +
-        stat_summary(fun.y=mean, geom="point", shape=8, size=14, 
+        stat_summary(fun="mean", geom="point", shape=8, size=14, 
                      position = position_dodge2(width = 0.9, preserve = "single")) +
         scale_colour_manual(name = paste(color_by_vars, collapse = "_"),
                             values = cbPalette)
-        geom_blank()
+    if(show_alk_sal_est){
+      p <- p +  stat_summary(aes(x_axis, alk_sal_est, colour = color_by),fun="mean", 
+                             na.rm = TRUE, geom="point", shape=18, size=14) 
+    }
   }
   
   if(plot_type == "box" & is.null(color_by_vars) & !is.null(facet_by_vars)){
@@ -127,8 +131,12 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
       geom_boxplot(colour = base_color) +
       geom_jitter(width = 0.1, height = 0, alpha = 0.5, 
                   size = point_size, colour = base_color) +
-      stat_summary(fun.y=mean, geom="point", shape=8, size=14, color=mean_color, fill="black") +
+      stat_summary(fun="mean", geom="point", shape=8, size=14, color=mean_color, fill="black") +
       facet_wrap(vars(facet_by), scales = y_facet)
+    if(show_alk_sal_est){
+      p <- p +  stat_summary(aes(x_axis, alk_sal_est),fun="mean", geom="point", na.rm = TRUE,
+                             shape=18, size=14, color="purple", fill="purple") 
+    }
   }  
   
   if(plot_type == "box" & !is.null(color_by_vars) & !is.null(facet_by_vars)){
@@ -139,11 +147,15 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
         geom_boxplot() +
         geom_point(alpha = 0.5, size = point_size,
              position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0)) +
-        stat_summary(fun.y=mean, geom="point", shape=8, size=14, 
+        stat_summary(fun="mean", geom="point", shape=8, size=14, 
                      position = position_dodge2(width = 0.9, preserve = "single")) +
         facet_wrap(vars(facet_by), scales = y_facet) + 
         scale_colour_manual(name = paste(color_by_vars, collapse = "_"),
                             values = cbPalette)
+    if(show_alk_sal_est){
+      p <- p +  stat_summary(aes(x_axis, alk_sal_est, color = color_by), fun="mean", 
+                             na.rm = TRUE, geom="point", shape=18, size=14) 
+    }
   }
   
   
