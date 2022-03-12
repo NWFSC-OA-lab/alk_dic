@@ -71,16 +71,40 @@ filter_table <- function(d, filter_alk_lab, filter_run_by, filter_experiment,
   return(d)
 }
 
+## ph insitu function ----
+ph_insitu_fun <- function(ph_spec, temperature_spec, temperature_insitu, 
+                          alkaliniy, salinity){
+  ph_insitu <- NA
+  dic <- carb(flag = 8, ph_spec, alkaliniy / 1000000, 
+              T = temperature_spec, S = salinity)$DIC
+  ph_insitu <- carb(flag = 15, alkaliniy / 1000000, dic, 
+                    T = temperature_insitu, S = salinity)$pH
+  return(ph_insitu)
+}
+
+## make_match function ----
 make_match <- function(d_alk, d_ph){
   d_match <- data.frame(  alk_n = nrow(d_alk), 
-                          alk = mean(d_alk$alkalinity),
-                          alk_sd = sd(d_alk$alkalinity),
-                          alk_salinity = mean(d_alk$salinity),
+                          alk_mean = mean(d_alk$alkalinity),
+                          alk_salinity_mean = mean(d_alk$salinity),
                           ph_n = nrow(d_ph),
-                          ph = mean(d_ph$pHinsitu),
-                          ph_sd = sd(d_ph$pHinsitu),
-                          temperature = mean(d_ph$insituTemp)) 
-   d_carb <- carb(flag = 8, d_match$ph, d_match$alk/1000000, T = d_match$temperature, S = d_match$alk_salinity)
+                          ph_spec_est_of_alk_mean = mean(d_ph$pHinsitu),
+                          spec_est_of_alk_mean = mean(d_ph$alk),
+                          ph_spec_temp_mean = mean(d_ph$pHat25),
+                          ph_salinity_mean = mean(d_ph$salinity),
+                          ph_insitu_temp_mean = mean(d_ph$insituTemp)) %>%
+    mutate(ph_this_est_alk_mean = ph_insitu_fun(ph_spec_temp_mean, ph_spec_temp_mean,
+                                                ph_insitu_temp_mean, alk_mean, 
+                                                ph_salinity_mean))
+   
+  d_carb_spec_est <- carb(flag = 8, d_match$ph_spec_est_of_alk_mean, 
+                           d_match$spec_est_of_alk_mean/1000000, 
+                           T = d_match$ph_insitu_temp_mean, S = d_match$ph_salinity_mean) %>%
+     rename_with(~paste("spec_est", .x, sep = "_"))
+   
+  d_carb_alk_est <- carb(flag = 8, d_match$ph_this_est_alk_mean, d_match$alk_mean/1000000, 
+                           T = d_match$ph_insitu_temp_mean, S = d_match$ph_salinity_mean) %>%
+     rename_with(~paste("this_est", .x, sep = "_"))
    
    d_alk_1 <- d_alk %>%
      slice_head() %>%
@@ -90,7 +114,7 @@ make_match <- function(d_alk, d_ph){
      slice_head() %>%
      rename_with(~paste("ph", .x, sep = "_"))
    
-   d_match <- cbind(d_match, d_carb, d_alk_1, d_ph_1)
+   d_match <- cbind(d_match, d_carb_spec_est, d_carb_alk_est, d_alk_1, d_ph_1)
      
      
   return(d_match)
