@@ -78,8 +78,11 @@ ui <- fluidPage(
 )
 
 read_fun <- function(file){
-  return(read_excel(file) %>% mutate(unit_number = as.character(unit_number)))
+  return(read_excel(file) %>% 
+           mutate(unit_number = as.character(unit_number)) %>%
+           mutate(alkalinity = as.numeric(alkalinity)))
 }
+
 
 # Define server logic ----
 server <- function(input, output) {
@@ -95,6 +98,7 @@ server <- function(input, output) {
       mutate(alk_sal_slope = as.numeric(input$alk_sal_slope),
              alk_sal_intercept = as.numeric(input$alk_sal_intercept)) %>%
       mutate(alk_sal_est = salinity * alk_sal_slope + alk_sal_intercept) %>%
+      
       mutate(treatment_name = NA)
   })
   

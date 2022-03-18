@@ -88,11 +88,11 @@ make_match <- function(d_alk, d_ph){
                           alk_mean = mean(d_alk$alkalinity),
                           alk_salinity_mean = mean(d_alk$salinity),
                           ph_n = nrow(d_ph),
-                          ph_spec_est_of_alk_mean = mean(d_ph$pHinsitu),
-                          spec_est_of_alk_mean = mean(d_ph$alk),
-                          ph_spec_temp_mean = mean(d_ph$pHat25),
+                          ph_spec_est_of_alk_mean = mean(d_ph$ph_insitu),
+                          spec_est_of_alk_mean = mean(d_ph$alk_sal_est),
+                          ph_spec_temp_mean = mean(d_ph$p_h_sample_with_dye_corrections),
                           ph_salinity_mean = mean(d_ph$salinity),
-                          ph_insitu_temp_mean = mean(d_ph$insituTemp)) %>%
+                          ph_insitu_temp_mean = mean(d_ph$insitu_temperature)) %>%
     mutate(ph_this_est_alk_mean = ph_insitu_fun(ph_spec_temp_mean, ph_spec_temp_mean,
                                                 ph_insitu_temp_mean, alk_mean, 
                                                 ph_salinity_mean))

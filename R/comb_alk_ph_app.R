@@ -85,8 +85,9 @@ server <- function(input, output) {
   observeEvent(input$ph_file, {
     values$d_ph <- read_csv(input$ph_file$datapath) %>%
       unite("unit_id", c(unit, unit_number), remove = FALSE) %>%
-      rename(treatment_name = treatName) %>%
-      mutate(date_collected = as.Date(dateString, "%m/%d/%y"))
+      #rename(treatment_name = treatName) %>%
+      #mutate(date_collected = as.Date(dateString, "%m/%d/%y")) %>%
+      {.}
   })
   
   ## alk dynamic filter check boxes ----
@@ -238,7 +239,7 @@ server <- function(input, output) {
                                  input$ph_water_source_filter, input$ph_water_type_filter,input$ph_sample_set_filter,
                                  input$ph_date_collected_filter, input$ph_treatment_name_filter, NULL) %>%
                                    select(experiment, unit_id, water_source, water_type, sample_set,
-                                          date_collected, treatment_name, pHinsitu, salinity, insituTemp),
+                                          date_collected, treatment_name, ph_insitu, salinity, insitu_temperature),
                                  
                                  options = list(paging = TRUE,    ## paginate the output
                                                 pageLength = 6,  ## number of rows to output for each page
