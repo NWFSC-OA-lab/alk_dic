@@ -36,7 +36,7 @@ ui <- fluidPage(
                   
                   checkboxGroupInput("x_axis_vars", "X-axis variable", 
                                      choices = c("alk_lab", "run_by", "experiment", "unit",
-                                                 "unit_id", "water_source","sample_set",
+                                                 "unit_id", "water_source", "water_type","sample_set",
                                                  "date_collected", "treatment_name", "quality_flag", "salinity"),
                                      selected = "experiment", inline = TRUE),
                   checkboxGroupInput("colour_by", "Colour by", 
