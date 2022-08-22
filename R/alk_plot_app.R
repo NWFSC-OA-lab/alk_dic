@@ -78,7 +78,15 @@ ui <- fluidPage(
 )
 
 read_fun <- function(file){
-  return(read_excel(file) %>% 
+  print(excel_sheets(file))
+  if("alk_data" %in% excel_sheets(file)){
+    sheet_id <- "alk_data"
+  }
+  else{
+    sheet_id <- 1
+  }
+  print(sheet_id)
+  return(read_excel(file, sheet = sheet_id) %>% 
            mutate(unit_number = as.character(unit_number)) %>%
            mutate(alkalinity = as.numeric(alkalinity)))
 }
