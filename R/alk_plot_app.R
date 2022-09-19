@@ -78,17 +78,17 @@ ui <- fluidPage(
 )
 
 read_fun <- function(file){
-  print(excel_sheets(file))
   if("alk_data" %in% excel_sheets(file)){
     sheet_id <- "alk_data"
   }
   else{
     sheet_id <- 1
   }
-  print(sheet_id)
   return(read_excel(file, sheet = sheet_id) %>% 
            mutate(unit_number = as.character(unit_number)) %>%
-           mutate(alkalinity = as.numeric(alkalinity)))
+           mutate(alkalinity = as.numeric(alkalinity)) %>%
+           mutate(across(c(date_collected, date_run) & where(is.character),
+                  ~ as.Date(.x, "%Y.%m.%d"))))
 }
 
 
@@ -106,7 +106,6 @@ server <- function(input, output) {
       mutate(alk_sal_slope = as.numeric(input$alk_sal_slope),
              alk_sal_intercept = as.numeric(input$alk_sal_intercept)) %>%
       mutate(alk_sal_est = salinity * alk_sal_slope + alk_sal_intercept) %>%
-      
       mutate(treatment_name = NA)
   })
   
