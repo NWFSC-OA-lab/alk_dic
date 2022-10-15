@@ -31,23 +31,24 @@ ui <- fluidPage(
                   uiOutput("filter_water_type"),
                   uiOutput("filter_sample_set"),
                   uiOutput("filter_date_collected"),
+                  uiOutput("filter_date_run"),
                   uiOutput("filter_treatment_name"),
                   uiOutput("filter_quality_flag"),
                   
                   checkboxGroupInput("x_axis_vars", "X-axis variable", 
                                      choices = c("alk_lab", "run_by", "experiment", "unit",
                                                  "unit_id", "water_source", "water_type","sample_set",
-                                                 "date_collected", "treatment_name", "quality_flag", "salinity"),
+                                                 "date_collected", "date_run", "treatment_name", "quality_flag", "salinity"),
                                      selected = "experiment", inline = TRUE),
                   checkboxGroupInput("colour_by", "Colour by", 
                                      choices = c("alk_lab", "run_by", "experiment", "unit",
                                                  "unit_id", "water_source", "water_type", "sample_set",
-                                                 "date_collected", "treatment_name", "quality_flag", "salinity"),
+                                                 "date_collected", "date_run", "treatment_name", "quality_flag", "salinity"),
                                      selected = NULL, inline = TRUE),
                   checkboxGroupInput("facet_by", "Facet_by", 
                                      choices = c("alk_lab", "run_by", "experiment", "unit",
                                                  "unit_id", "water_source", "water_type", "sample_set",
-                                                 "date_collected", "treatment_name", "quality_flag", "salinity"),
+                                                 "date_collected", "date_run", "treatment_name", "quality_flag", "salinity"),
                                      selected = NULL, inline = TRUE),
                   #dateRangeInput("dates", h4("Date range"), start = "2018-03-13"),
                   downloadButton("downloadData", "Download")
@@ -183,10 +184,16 @@ server <- function(input, output) {
                        selected = filter_opts, inline = TRUE)
   })
   #TODO set data as range or check box
-  #date include dynamic checkboxes
+  #date collected include dynamic checkboxes
   output$filter_date_collected <- renderUI({
     filter_opts <- as.character(unique(values$d_alk$date_collected))
     checkboxGroupInput("date_collected_filter", "Include date collected", filter_opts, 
+                       selected = filter_opts, inline = TRUE)
+  })
+  #date run include dynamic checkboxes
+  output$filter_date_run <- renderUI({
+    filter_opts <- as.character(unique(values$d_alk$date_run))
+    checkboxGroupInput("date_run_filter", "Include date run", filter_opts, 
                        selected = filter_opts, inline = TRUE)
   })
   #treatment_name include dynamic checkboxes
@@ -208,7 +215,8 @@ server <- function(input, output) {
     d_filtered <- filter_alk(values$d_alk, input$alk_lab_filter, input$run_by_filter,
                              input$experiment_filter, input$unit_filter, input$unit_id_filter,
                              input$water_source_filter, input$water_type_filter,input$sample_set_filter, 
-                             input$date_collected_filter, input$treatment_name_filter, input$quality_flag_filter)
+                             input$date_collected_filter, input$date_run_filter,
+                             input$treatment_name_filter, input$quality_flag_filter)
     
     alk_plot(d_filtered, input$plot_type, input$x_axis_vars, input$colour_by, input$facet_by,
              input$point_size, input$yRangeCheckbox, input$ySlider, input$font_size, input$show_alk_sal_est,

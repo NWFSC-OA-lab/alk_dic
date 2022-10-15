@@ -6,7 +6,8 @@ library(tidyverse)
 ## filter alk function ----
 filter_alk <- function(d_alk, filter_alk_lab, filter_run_by, filter_experiment,
                        filter_unit, filter_unit_id, filter_water_source, filter_water_type,
-                       filter_sample_set, filter_date_collected, filter_treatment_name, filter_quality_flag){
+                       filter_sample_set, filter_date_collected, filter_date_run, 
+                       filter_treatment_name, filter_quality_flag){
   
   #convert missing values from checkboxes (i.e. "", to NA)
   filter_alk_lab[filter_alk_lab == ""] <- NA
@@ -18,6 +19,7 @@ filter_alk <- function(d_alk, filter_alk_lab, filter_run_by, filter_experiment,
   filter_water_type[filter_water_type == ""] <- NA
   filter_sample_set[filter_sample_set == ""] <- NA
   filter_date_collected[filter_date_collected == ""] <- NA
+  filter_date_run[filter_date_run == ""] <- NA
   filter_treatment_name[filter_treatment_name == ""] <- NA
   filter_quality_flag[filter_quality_flag == ""] <- NA
   
@@ -57,6 +59,10 @@ filter_alk <- function(d_alk, filter_alk_lab, filter_run_by, filter_experiment,
   if(!is.null(filter_date_collected)){
     d_alk <- d_alk %>%
       filter(as.character(date_collected) %in% filter_date_collected)
+  }
+  if(!is.null(filter_date_run)){
+    d_alk <- d_alk %>%
+      filter(as.character(date_run) %in% filter_date_run)
   }
   if(!is.null(filter_treatment_name)){
     d_alk <- d_alk %>%
