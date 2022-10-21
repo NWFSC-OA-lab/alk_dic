@@ -78,7 +78,7 @@ filter_alk <- function(d_alk, filter_alk_lab, filter_run_by, filter_experiment,
 
 
 ## plot function ----
-alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars, 
+alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars, 
                          color_by_vars, facet_by_vars,
                      point_size, set_y_range, y_range, font_size, show_alk_sal_est,
                      rotate_x_axis, show_ref_value, free_y_facet){
@@ -89,10 +89,23 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
   
   base_color <- cbPalette[5]
   mean_color <- "red"
-  
+  print(y_var)
   # add x-axis variable
-  d_alk_plot  <- d_alk_filtered %>%
-    unite(x_axis, x_axis_vars, remove = FALSE)
+  # add x-axis variable
+  # if there is only one variable, keep it in original class (e.g. date)
+  # if more than one variable, it becomes a character 
+  if(length(x_axis_vars) == 1){
+    d_alk_plot  <- as.data.frame(d_alk_filtered)
+    d_alk_plot$x_axis <- d_alk_plot[,x_axis_vars]
+  }else{
+    d_alk_plot  <- d_alk_filtered %>%
+      unite(x_axis, x_axis_vars, remove = FALSE)
+  }
+  
+  d_alk_plot  <- d_alk_plot %>%
+    mutate(y_variable = case_when(y_var == "alkalinity" ~ alkalinity,
+                                  y_var == "salinity" ~ salinity,
+                                  TRUE ~ NA_real_))
   
   y_facet <- if_else(free_y_facet, "free_y", "fixed")
   
@@ -103,7 +116,7 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
   ### box plots
   if(plot_type == "box" & is.null(color_by_vars) & is.null(facet_by_vars)){
     p <- d_alk_plot %>%
-      ggplot(aes(x_axis, alkalinity)) +
+      ggplot(aes(x_axis, y_variable)) +
       geom_boxplot(colour = base_color) +
       geom_jitter(width = 0.1, height = 0, alpha = 0.5, size = point_size, colour = base_color) +
       stat_summary(fun="mean", geom="point", shape=8, size=14, color=mean_color, fill="black")
@@ -116,7 +129,7 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
   if(plot_type == "box" & !is.null(color_by_vars) & is.null(facet_by_vars)){
     p <-  d_alk_plot %>%
       unite(color_by, color_by_vars, remove = FALSE) %>%
-      ggplot(aes(x_axis, alkalinity, color = color_by)) +
+      ggplot(aes(x_axis, y_variable, color = color_by)) +
         geom_boxplot() +
         geom_point(alpha = 0.5, size = point_size,
                    position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0)) +
@@ -133,7 +146,7 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
   if(plot_type == "box" & is.null(color_by_vars) & !is.null(facet_by_vars)){
     p <-  d_alk_plot %>%
       unite(facet_by, facet_by_vars, remove = FALSE) %>%
-      ggplot(aes(x_axis, alkalinity)) +
+      ggplot(aes(x_axis, y_variable)) +
       geom_boxplot(colour = base_color) +
       geom_jitter(width = 0.1, height = 0, alpha = 0.5, 
                   size = point_size, colour = base_color) +
@@ -149,7 +162,7 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
     p <-  d_alk_plot %>%
       unite(color_by, color_by_vars, remove = FALSE) %>%
       unite(facet_by, facet_by_vars, remove = FALSE) %>%
-      ggplot(aes(x_axis, alkalinity, color = color_by)) +
+      ggplot(aes(x_axis, y_variable, color = color_by)) +
         geom_boxplot() +
         geom_point(alpha = 0.5, size = point_size,
              position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0)) +
@@ -168,23 +181,23 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
   ### scatter plots
   if(plot_type == "scatter" & is.null(color_by_vars) & is.null(facet_by_vars)){
     p <- d_alk_plot %>%
-      ggplot(aes(x_axis, alkalinity)) +
+      ggplot(aes(x_axis, y_variable)) +
       geom_point(size = point_size, colour = base_color) 
   }
   
   if(plot_type == "scatter" & !is.null(color_by_vars) & is.null(facet_by_vars)){
     p <-  d_alk_plot %>%
       unite(color_by, color_by_vars, remove = FALSE) %>%
-      ggplot(aes(x_axis, alkalinity)) +
-      geom_point(aes(color = color_by), size = point_size) +
-      scale_colour_manual(labels = paste(color_by_vars, collapse = "_"),
+      ggplot(aes(x_axis, y_variable, color = color_by)) +
+        geom_point(size = point_size) +
+        scale_colour_manual(name = paste(color_by_vars, collapse = "_"),
                           values = cbPalette)
   }
   
   if(plot_type == "scatter" & is.null(color_by_vars) & !is.null(facet_by_vars)){
     p <-  d_alk_plot %>%
       unite(facet_by, facet_by_vars, remove = FALSE) %>%
-      ggplot(aes(x_axis, alkalinity)) +
+      ggplot(aes(x_axis, y_variable)) +
       geom_point(size = point_size, colour = base_color) +
       facet_wrap(vars(facet_by), scales = y_facet)
   }  
@@ -193,19 +206,23 @@ alk_plot <- function(d_alk_filtered, plot_type, x_axis_vars,
     p <-  d_alk_plot %>%
       unite(color_by, color_by_vars, remove = FALSE) %>%
       unite(facet_by, facet_by_vars, remove = FALSE) %>%
-      ggplot(aes(x_axis, alkalinity)) +
+      ggplot(aes(x_axis, y_variable)) +
       geom_point(aes(color = color_by), size = point_size) +
       facet_wrap(vars(facet_by), scales = y_facet) + 
-      scale_colour_manual(labels = paste(color_by_vars, collapse = "_"),
+      scale_colour_manual(name = paste(color_by_vars, collapse = "_"),
                           values = cbPalette)
   }
   
   #set attributes common to all plots
-  if(!set_y_range){
+  if(!set_y_range & y_var == "alkalinity"){
     y_range <- c(min(d_alk_plot$alkalinity), max(d_alk_plot$alkalinity))
+  }
+  if(!set_y_range & y_var == "salinity"){
+    y_range <- c(min(d_alk_plot$salinity), max(d_alk_plot$salinity))
   }
   p <- p + 
     xlab(paste(x_axis_vars, collapse = "_")) +
+    ylab(y_var) +
     ylim(y_range) +
     theme_bw(base_size = font_size)
   if(rotate_x_axis){

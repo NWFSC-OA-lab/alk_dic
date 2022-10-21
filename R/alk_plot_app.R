@@ -38,17 +38,20 @@ ui <- fluidPage(
                   checkboxGroupInput("x_axis_vars", "X-axis variable", 
                                      choices = c("alk_lab", "run_by", "experiment", "unit",
                                                  "unit_id", "water_source", "water_type","sample_set",
-                                                 "date_collected", "date_run", "treatment_name", "quality_flag", "salinity"),
+                                                 "date_collected", "time_collected", "date_run", 
+                                                 "treatment_name", "quality_flag", "salinity"),
                                      selected = "experiment", inline = TRUE),
                   checkboxGroupInput("colour_by", "Colour by", 
                                      choices = c("alk_lab", "run_by", "experiment", "unit",
                                                  "unit_id", "water_source", "water_type", "sample_set",
-                                                 "date_collected", "date_run", "treatment_name", "quality_flag", "salinity"),
+                                                 "date_collected", "time_collected", "date_run", 
+                                                 "treatment_name", "quality_flag", "salinity"),
                                      selected = NULL, inline = TRUE),
                   checkboxGroupInput("facet_by", "Facet_by", 
                                      choices = c("alk_lab", "run_by", "experiment", "unit",
                                                  "unit_id", "water_source", "water_type", "sample_set",
-                                                 "date_collected", "date_run", "treatment_name", "quality_flag", "salinity"),
+                                                 "date_collected", "time_collected", "date_run", 
+                                                 "treatment_name", "quality_flag", "salinity"),
                                      selected = NULL, inline = TRUE),
                   #dateRangeInput("dates", h4("Date range"), start = "2018-03-13"),
                   downloadButton("downloadData", "Download")
@@ -63,6 +66,8 @@ ui <- fluidPage(
       plotOutput("plot", width = "100%", height = "740px"),
       radioButtons("plot_type", h4("Plot Type"), 
                    choices = c("box", "scatter"), inline = TRUE),
+      radioButtons("y_var", h4("Y-variable"), 
+                   choices = c("alkalinity", "salinity"), inline = TRUE),
       checkboxInput("show_alk_sal_est", "Show alk from sal estimate mean", value = FALSE),
       checkboxInput("show_ref_value", "Show standard reference value", value = FALSE),
       sliderInput("point_size", "Plot point size",
@@ -85,9 +90,10 @@ read_fun <- function(file){
   else{
     sheet_id <- 1
   }
-  return(read_excel(file, sheet = sheet_id) %>% 
+  return(read_excel(file, sheet = sheet_id) %>%
            mutate(unit_number = as.character(unit_number)) %>%
            mutate(alkalinity = as.numeric(alkalinity)) %>%
+           mutate(time_collected = as.POSIXct(paste(date_collected, time_collect), format = "%Y.%m.%d %H%M")) %>%
            mutate(across(c(date_collected, date_run) & where(is.character),
                   ~ as.Date(.x, "%Y.%m.%d"))))
 }
@@ -218,7 +224,7 @@ server <- function(input, output) {
                              input$date_collected_filter, input$date_run_filter,
                              input$treatment_name_filter, input$quality_flag_filter)
     
-    alk_plot(d_filtered, input$plot_type, input$x_axis_vars, input$colour_by, input$facet_by,
+    alk_plot(d_filtered, input$plot_type, input$y_var, input$x_axis_vars, input$colour_by, input$facet_by,
              input$point_size, input$yRangeCheckbox, input$ySlider, input$font_size, input$show_alk_sal_est,
              input$rotate_x_axis, input$show_ref_value, input$free_y_facet) 
   })
