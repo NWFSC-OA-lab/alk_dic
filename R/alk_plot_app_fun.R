@@ -89,7 +89,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
   
   base_color <- cbPalette[5]
   mean_color <- "red"
-  print(y_var)
+  
   # add x-axis variable
   # add x-axis variable
   # if there is only one variable, keep it in original class (e.g. date)
@@ -143,6 +143,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
     }
   }
   
+  
   if(plot_type == "box" & is.null(color_by_vars) & !is.null(facet_by_vars)){
     p <-  d_alk_plot %>%
       unite(facet_by, facet_by_vars, remove = FALSE) %>%
@@ -157,6 +158,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
                              shape=18, size=14, color="purple", fill="purple") 
     }
   }  
+  
   
   if(plot_type == "box" & !is.null(color_by_vars) & !is.null(facet_by_vars)){
     p <-  d_alk_plot %>%
@@ -233,7 +235,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
     p <- p + 
       geom_point(aes(y = ref_value), size = 5, colour = "black", shape = 18)
   }
-
+  
   return(p)
 }
 
