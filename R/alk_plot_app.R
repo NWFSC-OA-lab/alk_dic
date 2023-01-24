@@ -54,7 +54,8 @@ ui <- fluidPage(
                                                  "treatment_name", "quality_flag", "salinity"),
                                      selected = NULL, inline = TRUE),
                   #dateRangeInput("dates", h4("Date range"), start = "2018-03-13"),
-                  downloadButton("downloadData", "Download")
+                  downloadButton("downloadData", "Download All"),
+                  downloadButton("downloadFiltered", "Download Filtered")
     ),
     mainPanel(
       width = 10,
@@ -90,6 +91,7 @@ read_fun <- function(file){
   else{
     sheet_id <- 1
   }
+  print("starting read")
   return(read_excel(file, sheet = sheet_id) %>%
            mutate(unit_number = as.character(unit_number)) %>%
            mutate(alkalinity = as.numeric(alkalinity)) %>%
@@ -101,7 +103,7 @@ read_fun <- function(file){
 
 # Define server logic ----
 server <- function(input, output) {
-  values <- reactiveValues(d_alk = NULL, d_treat = NULL)
+  values <- reactiveValues(d_alk = NULL, d_treat = NULL, d_filtered = NULL)
 
       
   ## read alk data ----
@@ -113,7 +115,9 @@ server <- function(input, output) {
       mutate(alk_sal_slope = as.numeric(input$alk_sal_slope),
              alk_sal_intercept = as.numeric(input$alk_sal_intercept)) %>%
       mutate(alk_sal_est = salinity * alk_sal_slope + alk_sal_intercept) %>%
-      mutate(treatment_name = NA)
+      mutate(treatment_name = NA) %>%
+      {.}
+      print("finished read")
   })
   
   ## read treatment data ---
@@ -218,24 +222,33 @@ server <- function(input, output) {
   ## render plot ----
   output$plot <- renderPlot({
 
-    d_filtered <- filter_alk(values$d_alk, input$alk_lab_filter, input$run_by_filter,
+    values$d_filtered <- filter_alk(values$d_alk, input$alk_lab_filter, input$run_by_filter,
                              input$experiment_filter, input$unit_filter, input$unit_id_filter,
                              input$water_source_filter, input$water_type_filter,input$sample_set_filter, 
                              input$date_collected_filter, input$date_run_filter,
                              input$treatment_name_filter, input$quality_flag_filter)
     
-    alk_plot(d_filtered, input$plot_type, input$y_var, input$x_axis_vars, input$colour_by, input$facet_by,
+    alk_plot(values$d_filtered, input$plot_type, input$y_var, input$x_axis_vars, input$colour_by, input$facet_by,
              input$point_size, input$yRangeCheckbox, input$ySlider, input$font_size, input$show_alk_sal_est,
              input$rotate_x_axis, input$show_ref_value, input$free_y_facet) 
   })
   
-  ## download csv ----
+  ## download all csv ----
   output$downloadData <- downloadHandler(
     filename = function() {
       paste("alk_data", ".csv", sep = "")
     },
     content = function(file) {
       write.csv(values$d_alk, file, row.names = FALSE)
+    })
+  
+  ## download filtered csv ----
+  output$downloadFiltered <- downloadHandler(
+    filename = function() {
+      paste("alk_data_filtered", ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(values$d_filtered, file, row.names = FALSE)
     })
 }
 
