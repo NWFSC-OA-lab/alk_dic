@@ -136,7 +136,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
         stat_summary(fun="mean", geom="point", shape=8, size=14, 
                      position = position_dodge2(width = 0.9, preserve = "single")) +
         scale_colour_manual(name = paste(color_by_vars, collapse = "_"),
-                            values = cbPalette)
+                            values = rep(cbPalette,5))
     if(show_alk_sal_est){
       p <- p +  stat_summary(aes(x_axis, alk_sal_est, colour = color_by),fun="mean", 
                              na.rm = TRUE, geom="point", shape=18, size=14) 
@@ -172,7 +172,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
                      position = position_dodge2(width = 0.9, preserve = "single")) +
         facet_wrap(vars(facet_by), scales = y_facet) + 
         scale_colour_manual(name = paste(color_by_vars, collapse = "_"),
-                            values = cbPalette)
+                            values = rep(cbPalette,5))
     if(show_alk_sal_est){
       p <- p +  stat_summary(aes(x_axis, alk_sal_est, color = color_by), fun="mean", 
                              na.rm = TRUE, geom="point", shape=18, size=14) 
@@ -193,7 +193,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
       ggplot(aes(x_axis, y_variable, color = color_by)) +
         geom_point(size = point_size) +
         scale_colour_manual(name = paste(color_by_vars, collapse = "_"),
-                          values = cbPalette)
+                          values = rep(cbPalette,5))
   }
   
   if(plot_type == "scatter" & is.null(color_by_vars) & !is.null(facet_by_vars)){
@@ -212,7 +212,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
       geom_point(aes(color = color_by), size = point_size) +
       facet_wrap(vars(facet_by), scales = y_facet) + 
       scale_colour_manual(name = paste(color_by_vars, collapse = "_"),
-                          values = cbPalette)
+                          values = rep(cbPalette,5))
   }
   
   #set attributes common to all plots
