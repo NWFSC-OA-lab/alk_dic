@@ -117,7 +117,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
   if(plot_type == "box" & is.null(color_by_vars) & is.null(facet_by_vars)){
     p <- d_alk_plot %>%
       ggplot(aes(x_axis, y_variable)) +
-      geom_boxplot(colour = base_color) +
+      geom_boxplot(colour = base_color, outlier.shape = NA) +
       geom_jitter(width = 0.1, height = 0, alpha = 0.5, size = point_size, colour = base_color) +
       stat_summary(fun="mean", geom="point", shape=8, size=14, color=mean_color, fill="black")
     if(show_alk_sal_est){
@@ -130,7 +130,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
     p <-  d_alk_plot %>%
       unite(color_by, color_by_vars, remove = FALSE) %>%
       ggplot(aes(x_axis, y_variable, color = color_by)) +
-        geom_boxplot() +
+        geom_boxplot(outlier.shape = NA) +
         geom_point(alpha = 0.5, size = point_size,
                    position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0)) +
         stat_summary(fun="mean", geom="point", shape=8, size=14, 
@@ -148,7 +148,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
     p <-  d_alk_plot %>%
       unite(facet_by, facet_by_vars, remove = FALSE) %>%
       ggplot(aes(x_axis, y_variable)) +
-      geom_boxplot(colour = base_color) +
+      geom_boxplot(colour = base_color, outlier.shape = NA) +
       geom_jitter(width = 0.1, height = 0, alpha = 0.5, 
                   size = point_size, colour = base_color) +
       stat_summary(fun="mean", geom="point", shape=8, size=14, color=mean_color, fill="black") +
@@ -165,7 +165,7 @@ alk_plot <- function(d_alk_filtered, plot_type, y_var, x_axis_vars,
       unite(color_by, color_by_vars, remove = FALSE) %>%
       unite(facet_by, facet_by_vars, remove = FALSE) %>%
       ggplot(aes(x_axis, y_variable, color = color_by)) +
-        geom_boxplot() +
+        geom_boxplot(outlier.shape = NA) +
         geom_point(alpha = 0.5, size = point_size,
              position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0)) +
         stat_summary(fun="mean", geom="point", shape=8, size=14, 
