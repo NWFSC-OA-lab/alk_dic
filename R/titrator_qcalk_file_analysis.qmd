@@ -1,0 +1,411 @@
+---
+title: "Titrator file analysis"
+author: "Paul McElhany"
+format: 
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+    embed-resources: true
+    toc: true
+    number-sections: true
+# pdf: default
+execute:
+  warning: false
+# echo: false  
+editor_options: 
+  chunk_output_type: console
+---
+
+# Overview
+
+This notebook code for
+
+# Libraries
+
+```{r libraries}
+
+packages <- c("tidyverse", "here", "janitor", "gt")
+
+# load all the packages 
+lib <- lapply(packages, library, character.only=TRUE)
+
+```
+
+This notebook includes the libraries `r packages[-1]` and `r packages[1]`.
+
+# lab.qcalk file
+
+
+```{r read-qcalk}
+
+qcalk_file <- "lab_2022.02.28_to_2024.12.19.qcalk"
+
+d_raw <- read.delim(here("data/titrator_files", qcalk_file), header = FALSE,
+                sep = "\t") %>%
+  rename(file_name = V1,
+         date_time = V2,
+         operator = V3,
+         electrode_id = V4,
+         acid_batch = V5,
+         acid_temperature = V6,
+         cell_temperature = V7,
+         fit_mse = V8,
+         flag = V9,
+         salinity = V10,
+         alkalinity = V11,
+         e_0 = V12) %>%
+  mutate(e_0 = as.numeric(e_0))
+  
+```
+
+```{r qcalk-date-range}
+
+d_date_range <- d_raw %>%
+  mutate(date_time = as.POSIXct(date_time, 
+                                           format = "%m/%d/%y %H:%M:%S")) %>%
+  summarise(min_date = min(date_time, na.rm = TRUE),
+            max_date = max(date_time, na.rm = TRUE))
+
+```
+
+
+The lab.qcalk file stores the alkalinity and e0 results from every titration. The mean e0 results from every "accept" flag titration with the current electrode are used as the intial e0 to decide on the inital dosing amounts to get the sample to ~3.57 pH. If weird e0 values are accepted, the intial dosing be off. 
+
+Every electrode will have a unique e0, which may drift a bit over time. The electode id (serial number) should entered into the alkalinity program whenver a new electrode is installed. This was not done. However, we know the date of that the current electrode was installed and its serial number, we can add this to the file. 
+
+```{r new-electrode-date}
+#based on email from danielle on 2025.01.07
+new_electrode_date <- as.Date("2022-11-15")
+new_electrode_sn <- "20583724"
+```
+
+
+```{r d-accepted-qcalk}
+
+d_accept <- d_raw %>%
+  filter(flag == "Accept") %>%
+  filter(!is.na(e_0)) %>%
+  mutate(date_time = as.POSIXct(date_time, 
+                                           format = "%m/%d/%y %H:%M:%S")) %>%
+  mutate(year = format(date_time, "%Y")) %>%
+  mutate(electrode_id = if_else(date_time > new_electrode_date, new_electrode_sn, 
+                             "old"))
+
+```
+
+The lab.qcalk the "accept" flagged e0 values used for this analysis is from `r min(d_accept$date_time)` to `r max(d_accept$date_time)`.
+
+```{r}
+#| label: tbl-mean-unfiltered-e0
+#| tbl-cap: Mean E0 of "accept" flagged values from lab.qcalk file. Other than the "accept" flag the values have not been filtered.
+
+d_accept %>%
+  group_by(electrode_id) %>%
+  summarise(mean_e_0 = mean(e_0)) %>%
+  bind_rows(data.frame(electrode_id = "all", mean_e_0 = mean(d_accept$e_0))) %>%
+  gt()
+
+```
+
+
+```{r}
+#| label: fig-e0-vs-alk
+#| fig-cap: E0 vs alkalinity for all "accept" flagged values.
+
+d_accept %>%
+  filter(alkalinity < 15000) %>%
+  ggplot(aes(alkalinity, e_0)) +
+    geom_point(aes(color = electrode_id)) +
+    theme_bw(base_size = 16)
+```
+
+One of the eo values with the new electrode seems to be an outlier (e0 < 0.39), so it was removed.
+
+```{r d-new-electrode-clean}
+d_new_electrode_clean <- d_accept %>%
+  filter(e_0 > 0.39) %>%
+  filter(electrode_id == new_electrode_sn)
+```
+
+
+
+```{r}
+#| label: fig-eo-vs-time
+#| fig-cap: E0 vs time of the current electrode with clean data
+
+
+mean_e0_new_electrode <- mean(d_new_electrode_clean$e_0)
+
+d_new_electrode_clean %>%
+  ggplot(aes(date_time, e_0)) +
+    geom_point(color = "blue") +
+    geom_hline(yintercept = mean_e0_new_electrode, linetype = 2) +
+    theme_bw(base_size = 16)
+
+```
+
+
+```{r}
+#| label: fig-temperature-vs-time
+#| fig-cap: Cell temperature vs time of the current electrode with clean data
+
+mean_temperature_new_electrode <- mean(d_new_electrode_clean$cell_temperature)
+
+d_new_electrode_clean %>%
+  ggplot(aes(date_time, cell_temperature)) +
+    geom_point(color = "blue") +
+    geom_hline(yintercept = mean_temperature_new_electrode, linetype = 2) +
+    theme_bw(base_size = 16)
+
+```
+
+The new electrode clean data are written to a new lab.qcalk file that should be used with the titrator to provide the intial best estimate of E0 with the current electrode.
+
+```{r}
+d_new_electrode_clean %>%
+  mutate(date_time = format(date_time, "%m/%d/%y %H:%M:%S")) %>%
+  select(-year) %>%
+  write.table(here("data/titrator_files", "lab_2025.01.08.qcalk"), 
+              sep = "\t", row.names = FALSE, col.names = FALSE)
+```
+
+# Titration .alk file
+
+
+```{r constants}
+
+r <- 8.31446261815324
+f <- 9.64853321233100184e4 
+  
+```
+
+
+```{r}
+ph_from_h <- function(h){
+  ph <- (-log10(h))
+  return(ph)
+}
+```
+
+
+```{r nerst-equation}
+
+nerst_h <- function(e0, emf, temperature){
+  # #example data
+  # step_data <- alk[4,]
+  # e0 <- step_data$final_e0
+  # emf_v <- step_data$emf_v
+  # temperature <- step_data$cell_temperature
+  
+  
+  temperature_k <- temperature + 273.15
+  
+  h <- exp((emf - e0) / (r * temperature_k / f))
+  
+  return(h)
+}
+
+
+```
+
+
+```{r gran-fun}
+
+f1 <- function(sample_kg, hcl_kg, emf, temperature){
+  
+  #example data
+  # step_data <- alk[4,]
+  # sample_kg <- step_data$sample_kg
+  # hcl_kg <- step_data$hcl_kg
+  # emf_v <- step_data$emf_v
+  # temperature <- step_data$cell_temperature
+  
+  temperature_k <- temperature + 273.15
+  
+  f1_value <- (sample_kg + hcl_kg) * exp(emf / (r * temperature_k / f))
+  
+  #f1_value <- (sample_kg + hcl_kg) * exp((emf - e0) / (r * temperature_k / f))
+   
+  return(f1_value)
+}
+```
+
+
+```{r read-alk}
+
+read_alk <- function(file){
+  # test file for debugging function
+  #file <- here("data/titrator_files", "20241217 treat_b_8_02  1a.alk")
+  
+  #read the metadata inthe file header
+  d_meta <- read.delim(file, header = FALSE, sep = "\t", nrows = 20) %>%
+    rename(parameter = V1,
+           value = V2,
+           unit = V3)
+  meta <- d_meta$value
+  names(meta) <- d_meta$parameter
+  meta <- clean_names(meta)
+  names(meta)
+  #coeffecients to calcuate HCl density from acid temperature
+  hcl_density_coef_1 <- as.numeric(word(meta["density_func"], 
+                                        sep = str_escape("*")))
+  hcl_density_coef_2 <- as.numeric(str_sub(word(meta["density_func"], 2, 2, 
+                                        sep = str_escape("*")), start = 4))
+  hcl_density_coef_3 <- as.numeric(str_sub(word(meta["density_func"], 3, 3, 
+                                        sep = str_escape("*")), start = 2))
+  # HCl density factor
+  hcl_temperature <- as.numeric(meta["h_cl_temp_uncorr"])
+  hcl_density_factor <- hcl_density_coef_1 * hcl_temperature ^ 2 +
+    hcl_density_coef_2 * hcl_temperature + hcl_density_coef_3
+  
+  #Dosimate correction
+  meta["dosimat_corr_function"]
+  dosimat_coef_1 <- as.numeric(word(meta["dosimat_corr_function"],
+                                    sep = str_escape("*")))
+  dosimat_coef_2 <- as.numeric(str_sub(word(meta["dosimat_corr_function"],
+                                    sep = str_escape("*"), 2,2), start = 2))
+  
+  dosimat_correction_fun <- function(acid_ml, coef_1, coef_2){
+    coef_1 * acid_ml + coef_2 * acid_ml ^ 2
+  }
+  
+  
+  d_titration <- read_tsv(file, skip = 20) %>%
+    clean_names() %>%
+    rename(ph = p_h) %>%
+    mutate(final_e0 = as.numeric(meta["final_e0"]),
+           alkalinity = as.numeric(meta["total_alkalinity"]),
+           salinity = as.numeric(meta["salinity"]),
+           sample_g = as.numeric(meta["sample_size"]),
+           hcl_conc = as.numeric(meta["h_cl_concentration"]),
+           hcl_temperature = as.numeric(meta["h_cl_temp_uncorr"]),
+           hcl_density = hcl_density_factor,
+           total_hcl_ml = dosimat_correction_fun(total_h_cl_m_l_uncorr, 
+                                                 dosimat_coef_1,
+                                                 dosimat_coef_2),
+           cell_temperature = as.numeric(meta["cell_temp_mean_uncorr"])) %>%
+    mutate(hcl_g = total_hcl_ml * hcl_density) %>%
+    mutate(sample_kg = sample_g / 1000,
+           hcl_kg = hcl_g / 1000) %>%
+    mutate(include_point = if_else(point >= as.numeric(meta["first_point"]) &
+                                     point <= as.numeric(meta["last_point"]),
+                                   TRUE, FALSE)) %>%
+    mutate(f1 = f1(sample_kg, hcl_kg, emf_v, cell_temperature)) %>%
+    mutate(calc_ph = ph_from_h(nerst_h(final_e0, emf_v, cell_temperature)))
+  
+  return(d_titration)
+}
+
+```
+
+```{r sample-alk}
+d_alk <- read_alk(here("data/titrator_files", "20241217 treat_b_8_02  1a.alk"))
+```
+
+
+```{r}
+#| label: fig-gran-plot
+#| fig-cap: Gran plot
+
+d_alk %>%
+  ggplot(aes(hcl_kg, f1)) +
+    geom_point(aes(color = include_point)) +
+    geom_smooth(data = d_alk %>% filter(include_point), method = "lm") +
+    #ylim(0, max(d_alk$f1)) +
+    theme_bw(base_size = 16)
+    
+```
+
+```{r calc-alk-fun}
+
+calc_alk <- function(d) {
+  #example data
+  #d <- d_alk
+  
+  m_gran <- d %>%
+    filter(include_point) %>%
+    lm(f1 ~ hcl_kg, data = .)
+  
+  y_intercept <- m_gran$coefficients[1]
+  slope <- m_gran$coefficients[2]
+  x_intercept = - y_intercept/ slope
+  
+  alk <- x_intercept * d$hcl_conc[1] / 
+    d$sample_kg[1]
+  
+  return(alk)
+  
+}
+
+```
+
+```{r}
+alk_est_value <- calc_alk(d_alk)
+```
+
+```{r}
+
+calc_e0 <- function(emf, temperature, sample_kg, alk, hcl_kg, hcl_conc){
+  
+  temperature_k = temperature + 273.15
+  
+  e0 <- emf - (r * temperature_k / f) * 
+    log((-sample_kg * alk + hcl_kg * hcl_conc) / (sample_kg + hcl_kg))
+  
+  return(e0)
+}
+
+```
+
+```{r}
+d_alk_e0_est <- d_alk %>%
+  mutate(alk_est = alk_est_value) %>%
+  mutate(e0_est = calc_e0(emf_v, cell_temperature, sample_kg, alk_est, hcl_kg, 
+                          hcl_conc)) 
+```
+
+```{r}
+mean_e0_est <- d_alk_e0_est %>%
+  filter(include_point) %>%
+  pull(e0_est) %>%
+  mean()
+
+```
+
+```{r}
+
+d_alk_h_prime <- d_alk_e0_est %>%
+  mutate(h_prime = nerst_h(mean_e0_est, emf_v, cell_temperature)) 
+```
+
+```{r}
+
+eq_13 <- function(alk, sample_kg, hcl_kg, h, hcl_conc){
+  return(alk + ((sample_kg + hcl_kg) / sample_kg) * h - 
+           (hcl_kg / sample_kg) * hcl_conc)
+}
+```
+
+```{r}
+
+d_alk_eq_13 <- d_alk_h_prime %>%
+  mutate(eq_13 = eq_13(alk_est, sample_kg, hcl_kg, h_prime, hcl_conc)) %>%
+  mutate(eq_13_sq = eq_13 ^ 2)
+
+eq_13_ss <- sum(d_alk_eq_13$eq_13_sq)
+```
+
+
+
+```{r}
+d_alk %>%
+  ggplot(aes(ph, calc_ph)) +
+    geom_point(color = "blue", size = 5) +
+    geom_abline(linetype = 2) +
+    theme_bw(base_size = 16)
+```
+
+
+
+
+

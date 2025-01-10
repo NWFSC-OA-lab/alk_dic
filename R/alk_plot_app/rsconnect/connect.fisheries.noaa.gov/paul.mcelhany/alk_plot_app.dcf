@@ -1,0 +1,12 @@
+name: alk_plot_app
+title: alk_plot_app
+username: paul.mcelhany
+account: paul.mcelhany
+server: connect.fisheries.noaa.gov
+hostUrl: https://connect.fisheries.noaa.gov/__api__
+appId: 357
+bundleId: 1476
+url: https://connect.fisheries.noaa.gov/content/51c6ea70-eaa7-4673-8116-8868cd5282d8/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
