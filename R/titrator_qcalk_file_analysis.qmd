@@ -161,12 +161,12 @@ d_new_electrode_clean %>%
 
 The new electrode clean data are written to a new lab.qcalk file that should be used with the titrator to provide the intial best estimate of E0 with the current electrode.
 
-```{r}
+```{r write-qcalk}
 d_new_electrode_clean %>%
   mutate(date_time = format(date_time, "%m/%d/%y %H:%M:%S")) %>%
   select(-year) %>%
   write.table(here("data/titrator_files", "lab_2025.01.08.qcalk"), 
-              sep = "\t", row.names = FALSE, col.names = FALSE)
+              sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 ```
 
 # Titration .alk file
